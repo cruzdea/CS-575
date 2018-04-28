@@ -1,0 +1,194 @@
+//Cruz, Magnolia
+//April 26, 2018 & Lab6
+//Section 15245 Tues & Thurs 1110-1315
+
+//Function Prototypes
+#include <iostream>
+#include <iomanip>
+#include <cctype>
+
+//Prototype Function
+void GetData(int &partyID, int &numAdults, int &numChildren, char &mealType, char &weekend, float &depositAmt);
+float mealCost_calc(int numAdults, int numChildren, char mealType, float discountChildren, float stdMealCost, float delMealCost, float &mealCost_calc);
+void add_cost(float &tax_tip_rate_calc, float tax_tip_rate, float mealCost, float &surcharge_calc, float surcharge, char weekend);
+void finalBill_calc(float mealCost, int numAdults, int numChildren, int partyID, float surcharge_calc, float tax_tip_rate_calc, float &subTotal, float depositAmt, float &totalBalance);
+
+using namespace std;
+
+int main()
+{
+	//Declaration of Variables
+	int partyID, numAdults, numChildren;
+	char mealType, weekend;
+	float depositAmt, mealCost, mealCost_calc, subTotal, surcharge_calc, tax_tip_rate_calc, totalBalance;
+
+	//Constant variables
+	const float tax_tip_rate = 0.18;
+	const float discountChildren = 0.60;
+	const float surcharge = 0.07;
+	const float stdMealCost = 21.75;
+	const float delMealCost = 25.80;
+
+	//Function Calls
+	GetData(partyID, numAdults, numChildren, mealType, weekend, depositAmt);
+	mealCost_calc(numAdults, numChildren, mealType, discountChildren, stdMealCost, delMealCost, &mealCost_calc);
+	add_cost(tax_tip_rate_calc, tax_tip_rate, mealCost, surcharge_calc, surcharge, weekend);
+	finalBill_calc(mealCost, numAdults, numChildren, partyID, surcharge_calc, tax_tip_rate_calc, &subTotal, depositAmt, &totalBalance);
+	
+	system("pause");
+	return 0;
+}
+/******************************************************************************************************************/
+//Function 1: Get the mealtype, weekend and deposit amount from user.
+void GetData(int &partyID, int &numAdults, int &numChildren, char &mealType, char &weekend, float &depositAmt, bool error)
+{
+	do {
+		error = false;
+		cout << "Enter the Party ID (must be a positive number)." << endl;
+		cin >> partyID;
+		if (!cin)
+		{
+			cout << "Party ID cannot be a letter." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+		else if (partyID < 0)
+		{
+			cout << "INVALID ENTRY: Party ID must be a positive number." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+	} while (error == true);
+	do {
+		error = false;
+		cout << "Enter the number of Adults and Children (must be equal to or greater than 0): ";
+		cin >> numAdults >> numChildren;
+		if (!cin)
+		{
+			cout << "INVALID ENTRY: The number of Adults and Children cannot be a letter." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+		else if (numAdults < 0 || numChildren < 0)
+		{
+			cout << "INVALID ENTRY: The number of Adults and Children must be equal to or greater than zero." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+	} while (error == true || numAdults < 0 || numChildren < 0);
+
+	do {
+		error = false;
+		cout << "Enter meal type (must be <S> for Standard or <D> for Deluxe)" << endl;
+		cin >> mealType;
+		if (!cin)
+		{
+			cout << "INVALID ENTRY: Meal type cannot be a number." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+		else if (toupper(mealType) != 'D' || toupper(mealType) != 'S')
+		{
+			cout << "INVALID ENTRY: Meal type can only be <S> or <D>.";
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+	} while (error == true || toupper(mealType) != 'D' || toupper(mealType) != 'S');
+	do {
+		error = false;
+		cout << "Enter <Y> for Weekend or <N> for Weekday." << endl;
+		cin >> weekend;
+		if (!cin)
+		{
+			cout << "INVALID ENTRY: Weekend cannot be a number." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+		else if (toupper(weekend) != 'Y' || toupper(weekend) != 'N')
+		{
+			cout << "INVALID ENTRY: Enter <Y> for Weekend or <N> for Weekday." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+	} while (error == true || toupper(weekend) != 'Y' || toupper(weekend) != 'N');
+	do {
+		error = false;
+		cout << "Enter Deposit Amount (must be equal to or greater than 0): " << endl;
+		cin >> depositAmt;
+		if (!cin)
+		{
+			cout << "INVALID ENTRY: Deposit amount cannot be a letter." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+		else if (depositAmt < 0);
+		{
+			cout << "INVALID ENTRY: Deposit amount must be equal to or greater than 0." << endl;
+			cin.clear();
+			cin.ignore(200, '\n');
+			error = true;
+		}
+	} while (error == true || depositAmt < 0);
+
+}
+
+/******************************************************************************************************************/
+//Function 2: Calculate cost of the meals for adults and children
+float mealCost_calc(int numAdults, int numChildren, char mealType, float discountChildren, float stdMealCost, float delMealCost, float &mealCost_calc);
+{
+	if (mealType == 'S') //For mealtype <S> for Standard
+	{
+		mealCost_calc = ((numAdults * stdMealCost) + (numChildren * (stdMealCost * discountChildren)));
+	}
+	if (mealType == 'D') // For Mealtype: D for Deluxe
+	{
+		mealCost_calc = ((numAdults * delMealCost) + (numChildren * (delMealCost * discountChildren)));
+	}
+	return mealCost_calc;
+}
+/******************************************************************************************************************/
+//Function 3: Calculate additional costs for tip_tax & surcharge
+void add_cost(float &tax_tip_rate_calc, float tax_tip_rate, float mealCost, float &surcharge_calc, float surcharge, char weekend)
+{
+	tax_tip_rate_calc = mealCost * tax_tip_rate;
+
+	if (weekend == 'Y')
+	{
+		surcharge_calc = (mealCost + tax_tip_rate_calc) * surcharge;
+	}
+}
+/******************************************************************************************************************/
+//Function 4: Calculate total bill and output to the screen
+void finalBill_calc(float mealCost, int numAdults, int numChildren, int partyID, float surcharge_calc, float tax_tip_rate_calc, float &subTotal, float depositAmt, float &totalBalance);
+{
+	subTotal = mealCost + tax_tip_rate_calc + surcharge_calc;
+	totalBalance = subTotal - depositAmt;
+
+	cout << fixed << showpoint << setprecision(2);
+
+	cout << "_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n";
+	cout << endl;
+	cout << "Catering Company" << endl;
+	cout << endl;
+	cout << setfill('.') << left << setw(40) << "Party ID: " << right << " " << partyID << endl;
+	cout << setfill('.') << left << setw(40) << "No of Adults: " << right << " " << numAdults << endl;
+	cout << setfill('.') << left << setw(40) << "No of Children: " << right << " " << numChildren << endl;
+	cout << setfill('.') << left << setw(40) << "Meal Type: " << right << " " << mealType << endl;
+	cout << setfill('.') << left << setw(40) << "Weekend: " << right << " " << weekend << endl;
+	cout << setfill('.') << left << setw(40) << "Meal Cost: " << right << " " << mealCost << endl;
+	cout << setfill('.') << left << setw(40) << "Tax & Tip: " << right << " " << tax_tip_rate_calc << endl;
+	cout << setfill('.') << left << setw(40) << "Surcharge: " << right << " " << surcharge_calc << endl;
+	cout << setfill('.') << left << setw(40) << "SubTotal: " << right << " " << subtotal << endl;
+	cout << setfill('.') << left << setw(40) << "Deposit Amount: " << right << " " << depositAmt << endl;
+	cout << setfill('.') << left << setw(40) << "Total Balance Due: " << right << " " << totalBalance << endl;
+
+}
