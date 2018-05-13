@@ -1,0 +1,129 @@
+//Cruz, Magnolia
+//March 8, 2018 & Lab3C
+//Section 15245 Tues & Thurs 1110-1315
+
+#include<iostream>
+#include<iomanip>
+using namespace std;
+
+int main()
+{
+	char package;
+	const float packageA = 9.95;//First 10 internet access hours with monthly base rate. $2 for each additional hour.
+	const float packageB = 14.95;//First 20 internet access hours with monthly base rate. $1 for each additional hour.
+	const float packageC = 19.95;//Unlimited internet access hours with monthly base rate.
+	int totalHoursUsed = 0;
+	double hourlyCharge = 0;
+	double totalBill;
+	bool error = false;
+
+
+	cout << fixed << showpoint << setprecision(2);
+	cout << "Monthly Internet Service Bill \n";
+	cout << "Enter the package you purchased by typing A, B or C: ";
+	cin >> package;
+
+	if (package != 'A' && package != 'a')
+	{
+		if (package != 'B' && package != 'b')
+		{
+			if (package != 'C' && package != 'c')
+
+			{
+				cout << "The package you entered does not exist.\n";
+				error = true;
+			}
+
+			else
+			{
+				cout << "Enter Total Hours Used (cannot exceed 200 hr limit): ";
+				cin >> totalHoursUsed;
+
+				if (totalHoursUsed > 200)
+				{
+					cout << "Hours cannot be greater than 200. \n";
+					error = true;
+				}
+				else
+				{
+					//Package C
+					totalBill = packageC;
+				}
+
+			}
+		}
+		else
+		{
+			cout << "Enter Total Hours Used (cannot exceed 200 hr limit): ";
+			cin >> totalHoursUsed;
+
+			if (totalHoursUsed > 200)
+			{
+				cout << "Hours cannot be greater than 200. \n";
+				error = true;
+			}
+			else
+			{
+
+				if (totalHoursUsed <= 20)
+				{
+					//Package B
+					totalBill = packageB;
+
+				}
+				else
+				{
+					hourlyCharge = (totalHoursUsed - 20) * 1.00;
+					totalBill = packageB + hourlyCharge;
+				}
+			}
+		}
+	}
+	else
+	{
+		cout << "Enter Total Hours Used (cannot exceed 200 hr limit): ";
+		cin >> totalHoursUsed;
+
+		if (totalHoursUsed > 200)
+		{
+			cout << "Hours cannot be greater than 200. \n";
+			error = true;
+		}
+		else
+		{
+			if (totalHoursUsed <= 10)
+			{
+				//Package A
+				totalBill = packageA;
+			}
+			else
+			{
+				hourlyCharge = (totalHoursUsed - 10) * 2.00;
+				totalBill = packageA + hourlyCharge;
+			}
+		}
+	}
+	if (error == false)
+	{
+		cout << "_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n";
+
+		cout << setfill('.') << left << setw(40) << "Package Purchased: "
+			<< right << " " << package << "\n";
+		cout << left << setw(40) << "Total Hours Used: "
+			<< setfill(' ') << right << setw(10)
+			<< totalHoursUsed << "\n";
+		cout << setfill('.') << left << setw(40) << "Hourly Charge: "
+			<< setfill(' ') << right << " $"
+			<< setw(8) << hourlyCharge << "\n";
+		cout << setfill('.') << left << setw(40) << "Total Bill: "
+			<< setfill(' ') << right << " $"
+			<< setw(8) << totalBill << "\n";
+		cout << "_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n";
+
+		cout << "Payment is due no later than March 31, 2018. Thank you for your business.\n";
+	}
+
+	system("pause");
+	return 0;
+
+}
