@@ -1,0 +1,63 @@
+//Cruz, Magnolia
+//April 17, 2018 & Lab5D
+//Section 15245 Tues & Thurs 1110-1315
+//
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+int main()
+{
+ //Variable declaration
+ ifstream indata; ofstream outdata;
+ unsigned int a, b;
+ const int row = 8; const int column = 6;
+ const int number_count_per_line = 7;
+ double num, min, max, sum, average;
+ double sub_sum = 0;
+ indata.open("I:\\Data1.txt");
+ if (!indata)              //file not found. User to verify path name.
+ {
+  cout << "System unable to open file." << endl;
+  cout << "Program now terminating." << endl;
+  exit(1);
+ }
+ cout << "System running." << endl;
+ outdata.open("I:\\DataOutput.txt"); //new file created using the same path for the Output file. 
+ indata >> num; //First number of data file input
+ 
+ //Setting the first input number as both highest & lowest to compare with the rest of the input numbers
+ max = num;
+ min = num;
+ {
+  while(!indata.eof())
+  /*for (a = 0; a < row; a++)*/
+  {
+   for (b = 0; b < column; b++)
+   {
+    outdata << " " << num << " ";
+    sub_sum += num;
+    indata >> num;
+    if (num > max)
+     max = num;
+    if (num < min)
+     min = num;
+   }
+   outdata << num << endl;
+   sum = sub_sum + num;
+   average = sum / number_count_per_line;
+   outdata << left << setw(15) << "Max number: " << right << max << endl;
+   outdata << left << setw(15) << "Min number: " << right << min << endl;
+   outdata << left << setw(15) << "Total: " << right << sum << endl;
+   outdata << left << setw(15) << "Average: " << right << average << endl;
+   outdata << "\n";
+   indata >> num;
+   // Restarting all variables to initialize a new row.
+   sub_sum = 0;
+   max = num;
+   min = num;
+  }
+  indata.close();      // Input file closing
+  outdata.close();    // Output file closing
+  system("pause");
+ }
