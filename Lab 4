@@ -1,0 +1,117 @@
+//Cruz, Magnolia
+//March 22, 2018 & Lab4D
+//Section 15245 Tues & Thurs 1110-1315
+
+// Program contains repetition structures.
+
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+	// Program contains repetition structures - do, loop and while.
+
+	//Variable and constant declarations:
+	string drink;
+	char add_tests;
+	float caffeine;
+	float leftover_caff;
+	int hours, i;
+	const float caff_elim = .13;
+	bool error = false;
+
+	cout << fixed << showpoint << setprecision(2);
+
+	cout << "Caffeine Per Hour Analysis" << endl;
+	cout << endl;
+
+	do {
+		cout << "Enter your caffeinated drink: ";
+		getline(cin, drink);
+
+		do {
+			error = false;
+			cout << "Enter the amount of caffeine consumed in mg (cannot exceed 350 mg): " << endl;
+			cin >> caffeine;
+			leftover_caff = caffeine;
+			if (!cin)
+			{
+				cout << "INVALID ENTRY: The amount must be a number, not a letter." << endl;
+				cin.clear();
+				cin.ignore(200, '\n');
+				error = true;
+			}
+			else if (caffeine > 350 || caffeine < 0)
+			{
+				cout << "INVALID ENTRY: The amount of caffeine you entered is either greater than 350 or less than 0." << endl;
+				error = true;
+			}
+		} while (error == true || caffeine > 350 || caffeine < 0);
+		do {
+			error = false;
+			cout << "Enter the hours you want to see the amount of caffeine still in the body: (must be between 1 to 14 hours): " << endl;
+			cin >> hours;
+			if (!cin)
+			{
+				cout << "INVALID ENTRY: The amount must be a number, not a letter." << endl;
+				cin.clear();
+				cin.ignore(200, '\n');
+				error = true;
+			}
+			else if (hours > 14 || hours < 0)
+			{
+				error = false;
+				cout << "INVALID ENTRY: The hours you entered is either less than 0 or more than 14." << endl;
+				error = true;
+			}
+		} while (error == true || hours > 14 || hours < 0);
+		cout << endl;
+
+		//Next section will consider scenarios when there is no caffeine eliminated / absorbed.
+		if (hours == 0)
+		{
+			cout << setfill('.') << left << setw(40) << "Amt of remaining caffeine: " << right << " " << caffeine << endl;
+		}
+		else
+		{
+			for (i = 1; i <= hours; i++)
+			{
+				leftover_caff = leftover_caff - leftover_caff * caff_elim;
+				cout << "Remaining Caffeine at hour " << setfill('.') << left << setw(15) << i << right << " " << leftover_caff << " mg" << endl;
+				cout << endl;
+			}
+		}
+		cout << "_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n";
+		cout << endl;
+		cout << "Summary" << endl;
+		cout << endl;
+		cout << setfill('.') << left << setw(40) << "Caffeinated drink: " << right << " " << drink << endl;
+		cout << setfill('.') << left << setw(40) << "Caffeine amt initially consumed: " << right << " " << caffeine << endl;
+		cout << setfill('.') << left << setw(40) << "Total hours entered: " << right << " " << hours << endl;
+		cout << setfill('.') << left << setw(40) << "Amt of remaining caffeine: " << right << " " << leftover_caff << " mg" << endl;
+		cout << endl;
+
+		cout << "If you would like to test other caffeinated drinks, " << endl;
+		cout << "Press <Y> to continue or " << endl;
+		cout << "Press <N> to end the program." << endl;
+		cin >> add_tests;
+		cin.clear();
+		cin.ignore(200, '\n');
+		if (!cin)
+		{
+			cout << "INVALID ENTRY: Press <Y> to continue and test other caffeneited drink or <N> to end the program" << endl;
+			cin.clear(), cin.ignore(200, '\n');
+		}
+		while (add_tests != 'Y' && add_tests != 'y' && add_tests != 'N' && add_tests != 'n')
+		{
+			cout << "INVALID ENTRY: You did not enter a <Y> or <N>." << endl;
+		}
+	} while (add_tests == 'Y' || add_tests == 'y');
+
+	return 0;
+}
+
