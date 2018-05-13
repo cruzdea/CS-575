@@ -1,0 +1,142 @@
+//Cruz, Magnolia
+//May 15, 2018 & Lab6
+//Section 15245 Tues & Thurs 1110-1315
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
+using namespace std;
+
+ifstream inData;
+ofstream outData;
+
+//Function Prototype;
+
+void calcMMA(ifstream &inData, int even[], int &countEven, int &minEven, int &maxEven, double &avgEven, int odd[], int &countOdd, int &minOdd, int &maxOdd, double &avgOdd); // MMA = Min, Max & Average
+void outputSum(ofstream &outData, int even[], int countEven, int minEven, int maxEven, double avgEven, int higherEven, int odd[], int countOdd, int minOdd, int maxOdd, double avgOdd, int higherOdd);
+
+int main()
+{
+	//Variables declaration
+	int n;
+	int even[100];
+	int odd[100];
+	int countEven = 0;
+	int countOdd = 0;
+	int minEven, maxEven, higherEven, higherOdd;
+	int minOdd, maxOdd;
+	double avgEven, avgOdd;
+
+	outData << fixed << showpoint << setprecision(2);
+
+	inData.open("E:\\Data Input Lab 7.txt");
+	if (!inData)
+	{
+		cout << "System unable to open file. Program now termintating." << endl;
+		system("pause");
+		exit(1);
+	}
+	cout << "System running." << endl;
+	outData.open("E:\\Data Output Lab 7.txt");
+
+	inData >> n;
+
+	while (!inData.eof())
+	{
+		inData >> n;
+
+		if (n % 2 == 0)
+		{
+			even[countEven] = n;
+			countEven++;
+		}
+		else
+		{
+			odd[countOdd] = n;
+			countOdd++;
+		}
+		
+		calcMMA(inData, even, countEven, minEven, maxEven, avgEven, odd, countOdd, minOdd, maxOdd, avgOdd);
+	}
+	outputSum(outData, even, countEven, minEven, maxEven, avgEven, higherEven, odd, countOdd, minOdd, maxOdd, avgOdd, higherOdd);
+	inData.close();
+	outData.close();
+	return 0;
+}
+
+void calcMMA(ifstream &inData, int even[], int &countEven, int &minEven, int &maxEven, double &avgEven, int odd[], int &countOdd, int &minOdd, int &maxOdd, double &avgOdd)
+{
+	int i, sumEven = 0, sumOdd = 0;
+	avgEven = 0, avgOdd = 0;
+	minEven = even[0];
+	maxEven = even[0];
+	minOdd = odd[0];
+	maxOdd = odd[0];
+
+	for (int i = 0; i < countEven; i++)
+	{
+		if (even[i] < minEven) // Even Min & Max 
+			minEven = even[i];
+		else if (even[i] > maxEven)
+			maxEven = even[i];
+	}
+	for (int i = 0; i < countEven; i++) // Even Sum
+	{
+		sumEven += even[i];
+	}
+	avgEven = (double(sumEven) / countEven); // Even Average
+
+	for (int i = 0; i < countOdd; i++)
+	{
+		if (odd[i] < minOdd) // Odd Min & Max
+			minOdd = odd[i];
+		else if (odd[i] > maxOdd)
+			maxOdd = odd[i];
+	}
+	for (int i = 0; i < countOdd; i++)
+	{
+		sumOdd += odd[i];
+	}
+	avgOdd = (double(sumOdd) / countOdd); // Odd Average
+}
+
+void outputSum(ofstream &outData, int even[], int countEven, int minEven, int maxEven, double avgEven, int higherEven, int odd[], int countOdd, int minOdd, int maxOdd, double avgOdd, int higherOdd)
+{
+	outData << fixed << showpoint << setprecision(2);
+	outData << "The contents of the even array: " << endl;
+	for (int i = 0; i < countEven; i++)
+	{
+		outData << even[i] << " ";
+	}
+	outData << endl;
+	outData << "Max even number: " << maxEven << endl;
+	outData << "Min even number: " << minEven << endl;
+	outData << "Average for even array: " << avgEven << endl;
+	outData << "List of even values higher than the even average: " << endl;
+	for (int i = 0; i < countEven; i++)
+	{
+		if (even[i] > avgEven)
+			outData << even[i] << " ";
+	}
+	outData << endl;
+	outData << "*******************************************************************************************************************************************************" << endl;
+
+	outData << "The contents of the odd array: " << endl;
+	for (int i = 0; i < countOdd; i++)
+	{
+		outData << odd[i] << " ";
+	}
+	outData << endl;
+	outData << "Max odd number: " << maxOdd << endl;
+	outData << "Min even number: " << minOdd << endl;
+	outData << "Average for odd array: " << avgOdd << endl;
+	outData << "List of odd values higher than the odd average: " << endl;
+	for (int i = 0; i < countOdd; i++)
+	{
+		if (odd[i] > avgOdd)
+			outData << odd[i] << " ";
+	}
+	outData << endl;
+	outData << "*******************************************************************************************************************************************************" << endl;
+}
