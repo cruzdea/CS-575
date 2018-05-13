@@ -1,0 +1,193 @@
+//Cruz, Magnolia
+//May 8, 2018 & Lab6
+//Section 15245 Tues & Thurs 1110-1315
+
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <cctype>
+
+using namespace std;
+
+ifstream inData;
+ofstream errorData, correctData;
+
+//Prototyping
+
+void dataFile(ifstream &inData, int &partyID, int &numAdults, int &numChildren, char &mealType, char &weekend, float &depositAmt);
+void checkError(int &partyID, int &numAdults, int &numChildren, char &mealType, char &weekend, float &depositAmt, bool &error);
+void dataCalc(int numAdults, int numChildren, char mealType, float discountChildren, float stdMealCost, float delMealCost, float &mealCost_calc, float &tax_tip_rate_calc, float tax_tip_rate, float &surcharge_calc, float surcharge, char weekend, float depositAmt, float &subTotal, float &totalBalance, bool error);
+void sendData(ofstream &correctData, int partyID, int numAdults, int numChildren, char mealType, char weekend, float depositAmt, float &mealCost_calc, float &tax_tip_rate_calc, float &surcharge_calc, float discountChildren, float &subTotal, float &totalBalance);
+
+int main()
+{
+	//Variables declaration
+	int partyID, numAdults, numChildren;
+	char mealType, weekend;
+	float depositAmt, mealCost_calc, subTotal, surcharge_calc, tax_tip_rate_calc, totalBalance;
+
+	const float tax_tip_rate = 0.18;
+	const float discountChildren = 0.60;
+	const float surcharge = 0.07;
+	const float stdMealCost = 21.75;
+	const float delMealCost = 25.80;
+
+	bool error = false;
+
+	cout << "This program will calculate data for a Catering Company " << endl;
+
+	inData.open("I:\\Data_Input.txt");
+	if (!inData)
+	{
+		cout << "System unable to open file. Program now terminating." << endl;
+		system("pause");
+		exit(1);
+	}
+	cout << "System running." << endl;
+	correctData.open("I:\\Data_Output_Correct.txt");
+	errorData.open("I:\\Data_Output_Error.txt");
+
+	dataFile(inData, partyID, numAdults, numChildren, mealType, weekend, depositAmt);
+
+	while (!inData.eof())
+	{
+		checkError(partyID, numAdults, numChildren, mealType, weekend, depositAmt, error);
+
+		if (error == false)
+		{
+			dataCalc(numAdults, numChildren, mealType, discountChildren, stdMealCost, delMealCost, mealCost_calc, tax_tip_rate_calc, tax_tip_rate, surcharge_calc, surcharge, weekend, depositAmt, subTotal, totalBalance, error);
+			sendData(correctData, partyID, numAdults, numChildren, mealType, weekend, depositAmt, mealCost_calc, tax_tip_rate_calc, surcharge_calc, discountChildren, subTotal, totalBalance);
+		}
+
+		dataFile(inData, partyID, numAdults, numChildren, mealType, weekend, depositAmt);
+	}
+	inData.close();
+	correctData.close();
+	errorData.close();
+
+	return 0;
+}
+
+void dataFile(ifstream &inData, int &partyID, int &numAdults, int &numChildren, char &mealType, char &weekend, float &depositAmt)
+{
+	inData >> partyID >> numAdults >> numChildren >> mealType >> weekend >> depositAmt;
+}
+
+void checkError(int &partyID, int &numAdults, int &numChildren, char &mealType, char &weekend, float &depositAmt, bool &error)
+{
+	error = false;
+
+		if (!inData)
+		{
+			errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+			errorData << endl;
+			errorData << "The specific entry is not on file." << endl;
+			errorData << endl;
+			error = true;
+		}
+		else
+		{
+			if (partyID < 0)
+			{
+				errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+				errorData << endl;
+				errorData << "The: " << partyID << " from your input file is INVALID. Party ID must be a positive number." << endl;
+				errorData << "**************************************************************************************************************************" << endl;
+				errorData << endl;
+				error = true;
+			}
+				
+			if (numAdults < 0)
+			{
+				errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+				errorData << endl;
+				errorData << "For Party ID: " << partyID << " " << "The: " << numAdults << " is INVALID. Number of adults must be a positive number." << endl;
+				errorData << "**************************************************************************************************************************" << endl;
+				errorData << endl;
+				error = true;
+			}
+				
+			if (numChildren < 0)
+			{
+				errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+				errorData << endl;
+				errorData << "For Party ID: " << partyID << " " << "The: " << numChildren << " is INVALID. Number of children must be a positive number." << endl;
+				errorData << "**************************************************************************************************************************" << endl;
+				errorData << endl;
+				error = true;
+			}
+
+			if (toupper(mealType) != 'D' && toupper(mealType) != 'S')
+			{
+				errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+				errorData << endl;
+				errorData << "For Party ID: " << partyID << " " << "The: " << mealType << " is INVALID. Meal type can only be <S> or <D>." << endl;
+				errorData << "**************************************************************************************************************************" << endl;
+				errorData << endl;
+				error = true;
+			}
+			
+			if (toupper(weekend) != 'Y'  && toupper(weekend) != 'N')
+			{
+				errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+				errorData << endl;
+				errorData << "For Party ID: " << partyID << " " <<"The: " << weekend << " is INVALID. Weekend can only be <Y> or <N>." << endl;
+				errorData << "**************************************************************************************************************************" << endl;
+				errorData << endl;
+				error = true;
+			}
+	
+			if (depositAmt < 0)
+			{
+				errorData << "***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***ERROR***INVALID ENTRY***" << endl;
+				errorData << endl;
+				errorData << "For Party ID: " << partyID << " " << "The: " << depositAmt << " is INVALID. Deposit amount must be equal to or greater than 0." << endl;
+				errorData << "**************************************************************************************************************************" << endl;
+				errorData << endl;
+				error = true;
+			}	
+		}
+}
+
+void dataCalc(int numAdults, int numChildren, char mealType, float discountChildren, float stdMealCost, float delMealCost, float &mealCost_calc, float &tax_tip_rate_calc, float tax_tip_rate, float &surcharge_calc, float surcharge, char weekend, float depositAmt, float &subTotal, float &totalBalance, bool error)
+{
+	if (mealType == 'S' || mealType == 's')  //For mealtype <S> for Standard
+	{
+		mealCost_calc = ((numAdults * stdMealCost) + (numChildren * (stdMealCost * discountChildren)));
+	}
+	if (mealType == 'D' || mealType == 'd') // For Mealtype: <D> for Deluxe
+	{
+		mealCost_calc = ((numAdults * delMealCost) + (numChildren * (delMealCost * discountChildren)));
+	}
+
+	tax_tip_rate_calc = mealCost_calc * tax_tip_rate;
+
+	if (weekend == 'Y' || weekend == 'y')
+	{
+		surcharge_calc = (mealCost_calc + tax_tip_rate_calc) * surcharge;
+	}
+	if (error == false)
+	{
+		subTotal = mealCost_calc + tax_tip_rate_calc + surcharge_calc;
+		totalBalance = subTotal - depositAmt;
+	}
+}
+
+void sendData(ofstream &correctData, int partyID, int numAdults, int numChildren, char mealType, char weekend, float depositAmt, float &mealCost_calc, float &tax_tip_rate_calc, float &surcharge_calc, float discountChildren, float &subTotal, float &totalBalance)
+					{
+						"_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n";
+						correctData << endl;
+						correctData << "Catering Company" << endl;
+						correctData << endl;
+						correctData << setfill('.') << left << setw(35) << "Party ID: " << right << " " << partyID << endl;
+						correctData << setfill('.') << left << setw(35) << "No of Adults: " << right << " " << numAdults << endl;
+						correctData << setfill('.') << left << setw(35) << "No of Children: " << right << " " << numChildren << endl;
+						correctData << setfill('.') << left << setw(35) << "Meal Type: " << right << " " << mealType << endl;
+						correctData << setfill('.') << left << setw(35) << "Weekend: " << right << " " << weekend << endl;
+						correctData << setfill('.') << left << setw(35) << "Meal Cost: " << right << " " << mealCost_calc << endl;
+						correctData << setfill('.') << left << setw(35) << "Tax & Tip: " << right << " " << tax_tip_rate_calc << endl;
+						correctData << setfill('.') << left << setw(35) << "Surcharge: " << right << " " << surcharge_calc << endl;
+						correctData << setfill('.') << left << setw(35) << "SubTotal: " << right << " " << subTotal << endl;
+						correctData << setfill('.') << left << setw(35) << "Deposit Amount: " << right << " " << depositAmt << endl;
+						correctData << setfill('.') << left << setw(35) << "Total Balance Due: " << right << " " << totalBalance << endl;
+					}
