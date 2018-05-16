@@ -1,0 +1,115 @@
+//Cruz, Magnolia
+//May 15, 2018 & Lab6
+//Section 15245 Tues & Thurs 1110-1315
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
+using namespace std;
+
+//Function Prototype;
+void GetData(ifstream &inData, int even[], int odd[], int n, int &countEven, int &countOdd);
+void calcMMA(ofstream &outData, int Arr[], int count, float &avg); // MMA = Min, Max & Average
+void calcHTA(ofstream &outData, int Arr[], int count, float avg); // HTA = Higher Than Average
+
+int main()
+{
+	//Variables declaration
+	int n = 0, count = 0, even[50], odd[50], countEven = 0, countOdd = 0;
+	float avg = 0;
+	ifstream inData;
+	ofstream outData;
+
+	cout << fixed << showpoint << setprecision(2);
+
+	inData.open("E:\\Data Input Lab 7.txt");
+	if (!inData)
+	{
+		cout << "System unable to open file. Program now termintating." << endl;
+		system("pause");
+		exit(1);
+	}
+	outData << "System running." << endl;
+	outData.open("E:\\Data Output Lab 7.txt");
+
+	while (!inData.eof())
+	{
+		GetData(inData, even, odd, n, countEven, countOdd);
+	}
+	outData << "The contents of the EVEN array: " << endl;
+	for (int i = 0; i < countEven; i++)
+	{
+		outData << even[i] << " ";
+	}
+	outData << endl;
+
+	calcMMA(outData, even, countEven, avg); // MMA = Even Min, Max & Average
+	calcHTA(outData, even, countEven, avg); // HTA = Even Higher Than Average
+
+	outData << "The contents of the ODD array: " << endl;
+	for (int j = 0; j < countOdd; j++)
+	{
+		outData << odd[j] << " ";
+	}
+	calcMMA(outData, odd, countOdd, avg); // MMA = Odd Min, Max & Average
+	calcHTA(outData, odd, countOdd, avg); // HTA = Odd Higher Than Average
+
+	inData.close();
+	outData.close();
+	return 0;
+}
+
+// Fuction Definition
+void GetData(ifstream &inData, int even[], int odd[], int n, int &countEven, int &countOdd)
+{
+	inData >> n;
+	if (n % 2 == 0)
+	{
+		even[countEven] = n;
+		countEven++;
+	}
+	else
+	{
+		odd[countOdd] = n;
+		countOdd++;
+	}
+}
+
+void calcMMA(ofstream &outData, int Arr[], int count, float &avg)
+{
+	outData << fixed << showpoint << setprecision(2);
+	int i, min = 0, max = 0;
+	float sum = 0;
+
+	for (i = 0; i < count; i++)
+	{
+		if (Arr[i] < min) // Min & Max 
+			min = Arr[i];
+		else if (Arr[i] > max)
+			max = Arr[i];
+	}
+	outData << "Max number: " << max << endl;
+	outData << "Min number: " << min << endl;
+
+	for (i = 0; i < count; i++) // Sum & Average
+	{
+		sum += Arr[i];
+	}
+		avg = sum / count; 
+		outData << "Average: " << avg << endl;
+}
+
+void calcHTA(ofstream &outData, int Arr[], int count, float avg)
+{
+	int i;
+	outData << "List of values higher than the average: " << endl;
+	for (i = 0; i < count; i++) // Higher Than Average
+	{
+		if (Arr[i] > avg)
+			outData << Arr[i] << " ";
+	}
+	outData << endl;
+	outData << "******************************************************************************" << endl;
+	outData << endl;
+}
