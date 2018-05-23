@@ -1,0 +1,477 @@
+
+//Cruz, Magnolia
+
+//May 2018 & Lab8
+
+//Section 15245 Tues & Thurs 1110-1315
+
+ 
+
+#include<iostream>
+
+#include<fstream>
+
+#include<iomanip>
+
+#include<string>
+
+ 
+
+using namespace std;
+
+ 
+
+const unsigned ARRAY_SIZE = 50;
+
+ 
+
+struct Household
+
+{
+
+       string idNumber;
+
+       double hIncome;
+
+       int hMembers;
+
+};
+
+ 
+
+void getData(ifstream &inData, Household survey[], int counter);
+
+void menu(Household survey[], int counter, ofstream &outData);
+
+void printData(Household survey[], int counter, ofstream &outData);
+
+void calcAvg(Household survey[], int counter, ofstream &outData);
+
+void belowPov(Household survey[], int counter, ofstream &outData);
+
+void sort(Household survey[], int counter, ofstream &outData);
+
+void sortArray(Household survey1[], Household survey2[], int counter);
+
+void median(Household survey[], int counter, ofstream &outData);
+
+ 
+
+int main()
+
+{
+
+       ifstream inData;
+
+       ofstream outData;
+
+       Household survey[ARRAY_SIZE];
+
+       int counter = 0;
+
+ 
+
+       inData.open("I:\\Data.txt");
+
+       if (!inData)
+
+       {
+
+              cout << "System is unable to open file. Program now terminating." << endl;
+
+              system("pause");
+
+              exit(1);
+
+       }
+
+       outData << "System running." << endl;
+
+       outData.open("I:\\Output.txt");
+
+ 
+
+       getData(inData, survey, counter);
+
+ 
+
+       while (!inData.eof())
+
+       {     
+
+              counter++;
+
+              getData(inData, survey, counter);
+
+       }
+
+       menu(survey, counter, outData);
+
+ 
+
+       system("pause");
+
+       inData.close();
+
+       outData.close();
+
+}
+
+ 
+
+void getData(ifstream &inData, Household survey[], int counter)
+
+{
+
+       inData >> survey[counter].idNumber >> survey[counter].hIncome >> survey[counter].hMembers;
+
+}
+
+ 
+
+void menu(Household survey[], int counter, ofstream &outData)
+
+{
+
+       char option;
+
+       bool done = false;
+
+       do
+
+       {
+
+              cout << "Household Income Survey" << endl;
+
+              cout << "<A> Print display all input data" << endl;
+
+              cout << "<B> Calculate & list households with income greater than the average." << endl;
+
+              cout << "<C> Calculate and display percentage of households below the income poverty level." << endl;
+
+              cout << "<D> Print data sorted by household income." << endl;
+
+              cout << "<E> Calculate and display the median household income." << endl;
+
+              cout << "<F> Exit the program. " << endl;
+
+              cout << "Enter option: ";
+
+              cin >> option;
+
+              cout << endl;
+
+ 
+
+              switch (option)
+
+              {
+
+              case 'A':
+
+                     printData(survey, counter, outData);
+
+                     break;
+
+              case 'B':
+
+                     calcAvg(survey, counter, outData);
+
+                     break;
+
+              case 'C':
+
+                     belowPov(survey, counter, outData);
+
+                     break;
+
+              case 'D':
+
+                     sort(survey, counter, outData);
+
+                     break;
+
+              case 'E':
+
+                     median(survey, counter, outData);
+
+                     break;
+
+              case 'F':
+
+                     cout << "Goodbye...";
+
+                     done = true;
+
+                     break;
+
+              default:
+
+                     cout << "Invalid option. Please re-enter option: ";
+
+                     if (!cin)
+
+                     {
+
+                           cin.clear();
+
+                           cin.ignore(200, '\n');
+
+                     }
+
+              }
+
+       } while (!done);
+
+}
+
+ 
+
+void printData(Household survey[], int counter, ofstream &outData)
+
+{
+
+       outData << " ID Number\t\tIncome\t\tNumber of Members" << endl;
+
+       cout << " ID Number\t\tIncome\t\tNumber of Members" << endl;
+
+ 
+
+       for (int i = 0; i < counter; i++)
+
+       {
+
+              outData << survey[i].idNumber << "\t\t\t" << survey[i].hIncome << "\t\t\t" << survey[i].hMembers << endl;
+
+              cout << survey[i].idNumber << "\t\t\t" << survey[i].hIncome << "\t\t\t" << survey[i].hMembers << endl;
+
+       }
+
+       outData << endl;
+
+       outData << "********************************************************************************" << endl;
+
+       outData << endl;
+
+       cout << endl;
+
+}
+
+ 
+
+void calcAvg(Household survey[], int counter, ofstream &outData)
+
+{
+
+       cout << fixed << showpoint << setprecision(2);
+
+       outData << fixed << showpoint << setprecision(2);
+
+       int i;
+
+       double sum = 0, average = 0;
+
+ 
+
+       for (i = 0; i < counter; i++)
+
+       {
+
+              sum += survey[i].hIncome;
+
+       }
+
+       average = sum / counter;
+
+       outData << "The following households have income greater than the Average: $" << average << "." << endl;
+
+       cout << "The following households have income greater than the Average: $" << average << "." << endl;
+
+       outData << "********************************************************************************" << endl;
+
+       outData << endl;
+
+       cout << endl;
+
+ 
+
+       for (i = 0; i < counter; i++)
+
+       {
+
+              if (survey[i].hIncome > average)
+
+              {
+
+                     outData << survey[i].idNumber << "\t$" << survey[i].hIncome << endl;
+
+                     outData << endl;
+
+                     cout << survey[i].idNumber << "\t$" << survey[i].hIncome << endl;
+
+                     cout << endl;
+
+              }
+
+       }
+
+}
+
+ 
+
+void belowPov(Household survey[], int counter, ofstream &outData)
+
+{
+
+       int i, num = 0;
+
+       double belowPov, percentage;
+
+       for (i = 0; i < counter; i++)
+
+       {
+
+              double belowPov = 8000.00 + 500.00 *(survey[i].hMembers - 2);
+
+              if (survey[i].hIncome < belowPov)
+
+              {
+
+                     num++;
+
+              }
+
+       }
+
+       percentage = num * 1.0 / counter * 100;
+
+       outData << "Percentage of Household below the Income Poverty Level: " << percentage << "%" << endl;
+
+       outData << endl;
+
+       outData << "********************************************************************************" << endl;
+
+       outData << endl;
+
+       cout << "Percentage of Household below the Income Poverty Level: " << percentage << "%" << endl;
+
+       outData << endl;
+
+       cout << endl;
+
+}
+
+ 
+
+void sort(Household survey[], int counter, ofstream &outData)
+
+{
+
+       Household sortedSurvey[ARRAY_SIZE];
+
+       sortArray(survey, sortedSurvey, counter);
+
+       printData(sortedSurvey, counter, outData);
+
+}
+
+ 
+
+void sortArray(Household survey1[], Household survey2[], int counter) // copying struct to separate survey 1 original list & survey 2 sorted list;
+
+{
+
+       int i;
+
+       for (i = 0; i < counter; i++)
+
+       {
+
+              survey2[i] = survey1[i];
+
+       }
+
+       bool sorted = false, swap = false;
+
+       Household temp;
+
+ 
+
+       while (!sorted)
+
+       {
+
+              swap = false;
+
+              for (i = 0; i < counter-1; i++)
+
+              {
+
+                     if (survey2[i].hIncome > survey2[i+1].hIncome)
+
+                     {
+
+                           temp = survey2[i];
+
+                           survey2[i] = survey2[i + 1];
+
+                           survey2[i + 1] = temp;
+
+                           swap = true;
+
+                     }
+
+              }
+
+              if (swap == false)
+
+              {
+
+                     sorted = true;
+
+              }
+
+       }
+
+}
+
+void median(Household survey[], int counter, ofstream &outData)
+
+{
+
+       Household sortedSurvey[ARRAY_SIZE];
+
+       sortArray(survey, sortedSurvey, counter);
+
+       double medianIncome;
+
+ 
+
+       if (counter % 2 != 0)
+
+       {
+
+              medianIncome = survey[counter / 2 + 1].hIncome;
+
+       }
+
+       else
+
+       {
+
+              medianIncome = (survey[counter / 2].hIncome + survey[counter / 2 - 1].hIncome) / 2.0;
+
+       }
+
+       outData << "Median Income: " << medianIncome << endl;
+
+       outData << endl;
+
+       outData << "********************************************************************************" << endl;
+
+       outData << endl;
+
+       cout << "Median Income: " << medianIncome << endl;
+       cout << endl; 
+
+}
